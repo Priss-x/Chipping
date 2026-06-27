@@ -3,8 +3,10 @@ package com.chipping.envios.service;
 import com.chipping.envios.client.PedidoClient;
 import com.chipping.envios.dto.EnvioRequestDTO;
 import com.chipping.envios.dto.EnvioResponseDTO;
+import com.chipping.envios.model.EstadoEnvio;
 import com.chipping.envios.model.Envio;
 import com.chipping.envios.repository.EnvioRepository;
+import com.chipping.envios.repository.EstadoEnvioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,13 @@ import java.util.stream.Collectors;
 public class EnvioService {
 
     private final EnvioRepository envioRepository;
+    private final EstadoEnvioRepository estadoEnvioRepository;
     private final PedidoClient pedidoClient;
+
+    private EstadoEnvio obtenerEstadoPorNombre(String nombre) {
+        return estadoEnvioRepository.findByNombre(nombre)
+                .orElseThrow(() -> new RuntimeException("El estado '" + nombre + "' no existe en estados_envio"));
+    }
 
     public EnvioResponseDTO crearEnvio(EnvioRequestDTO request) {
         if (envioRepository.findByPedidoId(request.getPedidoId()).isPresent()) {
@@ -38,7 +46,7 @@ public class EnvioService {
                 request.getPedidoId(),
                 request.getUsuarioId(),
                 request.getDireccionDestino(),
-                "PREPARANDO",
+                obtenerEstadoPorNombre("PREPARANDO"),
                 numeroSeguimiento,
                 LocalDate.now().plusDays(5),
                 LocalDateTime.now(),
@@ -53,7 +61,8 @@ public class EnvioService {
         Envio envio = envioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Envio no encontrado"));
 
-        envio.setEstado(nuevoEstado);
+        EstadoEnvio estado = obtenerEstadoPorNombre(nuevoEstado);
+        envio.setEstado(estado);
         envio.setFechaActualizacion(LocalDateTime.now());
         envioRepository.save(envio);
 
@@ -94,7 +103,7 @@ public class EnvioService {
                 envio.getPedidoId(),
                 envio.getUsuarioId(),
                 envio.getDireccionDestino(),
-                envio.getEstado(),
+                envio.getEstado().getNombre(),
                 envio.getNumeroSeguimiento(),
                 envio.getFechaEstimada(),
                 envio.getFechaCreacion());

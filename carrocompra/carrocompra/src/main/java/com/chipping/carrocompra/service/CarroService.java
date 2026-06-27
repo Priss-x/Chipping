@@ -4,8 +4,10 @@ import com.chipping.carrocompra.client.InventarioClient;
 import com.chipping.carrocompra.client.ProductoClient;
 import com.chipping.carrocompra.dto.*;
 import com.chipping.carrocompra.model.Carro;
+import com.chipping.carrocompra.model.EstadoCarro;
 import com.chipping.carrocompra.model.ItemCarro;
 import com.chipping.carrocompra.repository.CarroRepository;
+import com.chipping.carrocompra.repository.EstadoCarroRepository;
 import com.chipping.carrocompra.repository.ItemCarroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,14 +26,20 @@ public class CarroService {
 
     private final CarroRepository carroRepository;
     private final ItemCarroRepository itemCarroRepository;
+    private final EstadoCarroRepository estadoCarroRepository;
     private final ProductoClient productoClient;
     private final InventarioClient inventarioClient;
 
+    private EstadoCarro obtenerEstadoActivo() {
+        return estadoCarroRepository.findByNombre("ACTIVO")
+                .orElseThrow(() -> new RuntimeException("El estado 'ACTIVO' no existe en estados_carro"));
+    }
+
     public CarroResponseDTO obtenerOCrearCarro(Long usuarioId) {
         Carro carro = carroRepository
-                .findByUsuarioIdAndEstado(usuarioId, "ACTIVO")
+                .findByUsuarioIdAndEstadoNombre(usuarioId, "ACTIVO")
                 .orElseGet(() -> carroRepository.save(
-                        new Carro(null, usuarioId, "ACTIVO", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>())
+                        new Carro(null, usuarioId, obtenerEstadoActivo(), LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>())
                 ));
         return mapToDTO(carro);
     }
@@ -42,9 +50,9 @@ public class CarroService {
             throw new RuntimeException("Producto no encontrado en el catálogo");
         }
         Carro carro = carroRepository
-                .findByUsuarioIdAndEstado(usuarioId, "ACTIVO")
+                .findByUsuarioIdAndEstadoNombre(usuarioId, "ACTIVO")
                 .orElseGet(() -> carroRepository.save(
-                        new Carro(null, usuarioId, "ACTIVO", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>())
+                        new Carro(null, usuarioId, obtenerEstadoActivo(), LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>())
                 ));
 
         Optional<ItemCarro> itemExistente = itemCarroRepository
@@ -76,7 +84,7 @@ public class CarroService {
         CarroResponseDTO respuestaForzada = new CarroResponseDTO();
         respuestaForzada.setId(carro.getId());
         respuestaForzada.setUsuarioId(carro.getUsuarioId());
-        respuestaForzada.setEstado(carro.getEstado());
+        respuestaForzada.setEstado(carro.getEstado().getNombre());
         respuestaForzada.setFechaCreacion(carro.getFechaCreacion());
         respuestaForzada.setItems(new ArrayList<>());
         respuestaForzada.setTotal(0);
@@ -94,7 +102,7 @@ public class CarroService {
         }
         itemCarroRepository.delete(item);
 
-        carroRepository.findByUsuarioIdAndEstado(usuarioId, "ACTIVO")
+        carroRepository.findByUsuarioIdAndEstadoNombre(usuarioId, "ACTIVO")
                 .ifPresent(carro -> {
                     carro.getItems().remove(item);
                     carro.setFechaActualizacion(LocalDateTime.now());
@@ -105,7 +113,7 @@ public class CarroService {
 
     public void vaciarCarro(Long usuarioId) {
         Carro carro = carroRepository
-                .findByUsuarioIdAndEstado(usuarioId, "ACTIVO")
+                .findByUsuarioIdAndEstadoNombre(usuarioId, "ACTIVO")
                 .orElseThrow(() -> new RuntimeException("Carro activo no existe"));
 
         for (ItemCarro item : carro.getItems()) {
@@ -147,7 +155,7 @@ public class CarroService {
         return new CarroResponseDTO(
                 carro.getId(),
                 carro.getUsuarioId(),
-                carro.getEstado(),
+                carro.getEstado().getNombre(),
                 carro.getFechaCreacion(),
                 itemsDTO,
                 totalCarro

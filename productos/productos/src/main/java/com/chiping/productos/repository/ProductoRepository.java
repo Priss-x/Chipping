@@ -7,7 +7,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ProductoRepository extends JpaRepository<Producto, Long> {
+public interface
+
+
+ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByNombreContainingIgnoreCase(String nombre);
 
     List<Producto> findByPrecioBetween(Integer min, Integer max);

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CarroRepository extends JpaRepository<Carro, Long> {
-    Optional<Carro> findByUsuarioIdAndEstado(Long usuarioId, String estado);
+    Optional<Carro> findByUsuarioIdAndEstadoNombre(Long usuarioId, String estadoNombre);
 }

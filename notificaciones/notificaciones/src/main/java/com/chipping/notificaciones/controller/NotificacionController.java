@@ -1,7 +1,7 @@
 package com.chipping.notificaciones.controller;
 
 import com.chipping.notificaciones.dto.NotificacionDTO;
-import com.chipping.notificaciones.model.Notificacion;
+import com.chipping.notificaciones.dto.NotificacionResponseDTO;
 import com.chipping.notificaciones.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,12 @@ public class NotificacionController {
     private final NotificacionService service;
 
     @GetMapping
-    public ResponseEntity<List<Notificacion>> obtenerTodas() {
+    public ResponseEntity<List<NotificacionResponseDTO>> obtenerTodas() {
         return ResponseEntity.ok(service.listarTodas());
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody NotificacionDTO notificacionDTO){
+    public ResponseEntity<?> crear(@RequestBody NotificacionDTO notificacionDTO) {
         return ResponseEntity.ok(service.guardar(notificacionDTO.getTipo(), notificacionDTO.getMensaje()));
     }
 

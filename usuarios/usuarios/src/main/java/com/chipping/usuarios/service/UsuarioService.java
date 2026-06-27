@@ -1,45 +1,81 @@
 package com.chipping.usuarios.service;
 
+import com.chipping.usuarios.dto.UsuarioRequestDTO;
+import com.chipping.usuarios.dto.UsuarioResponseDTO;
+import com.chipping.usuarios.model.Rol;
 import com.chipping.usuarios.model.Usuario;
+import com.chipping.usuarios.repository.RolRepository;
 import com.chipping.usuarios.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.rolRepository = rolRepository;
     }
 
-    public Usuario registrarUsuario(Usuario usuario) {
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+    public UsuarioResponseDTO registrarUsuario(UsuarioRequestDTO request) {
+        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("El correo ya está registrado");
         }
-        if (usuarioRepository.findByUsername(usuario.getUsername()).isPresent()) {
+        if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("El nombre de usuario ya existe");
         }
-        return usuarioRepository.save(usuario);
+
+        Rol rol;
+        if (request.getRoleId() != null) {
+            rol = rolRepository.findById(request.getRoleId())
+                    .orElseThrow(() -> new RuntimeException("El rol con id " + request.getRoleId() + " no existe"));
+        } else {
+            rol = rolRepository.findByNombre("CLIENTE")
+                    .orElseThrow(() -> new RuntimeException("No existe el rol CLIENTE por defecto"));
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setUsername(request.getUsername());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(request.getPassword());
+        usuario.setRole(rol);
+
+        return mapToDTO(usuarioRepository.save(usuario));
     }
 
-    public Usuario verificarLogin (String username, String password) {
+    public UsuarioResponseDTO verificarLogin(String username, String password) {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("El usuario no existe"));
         if (!usuario.getPassword().equals(password)) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-        return usuario;
+        return mapToDTO(usuario);
     }
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Usuario obtenerPorId(Long id) {
-        return usuarioRepository.findById(id)
+    public UsuarioResponseDTO obtenerPorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return mapToDTO(usuario);
+    }
+
+    private UsuarioResponseDTO mapToDTO(Usuario u) {
+        return new UsuarioResponseDTO(
+                u.getId(),
+                u.getUsername(),
+                u.getEmail(),
+                u.getRole().getId(),
+                u.getRole().getNombre()
+        );
     }
 }

@@ -1,11 +1,10 @@
 package com.chipping.proveedores.controller;
 
 import com.chipping.proveedores.dto.ProveedorDTO;
-import com.chipping.proveedores.entity.Proveedor;
+import com.chipping.proveedores.dto.ProveedorRequestDTO;
 import com.chipping.proveedores.service.ProveedorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +24,8 @@ public class ProveedorController {
     }
 
     @PostMapping
-    public ResponseEntity<Proveedor> crear(@Valid @RequestBody Proveedor p) {
-        return ResponseEntity.status(201).body(service.crear(p));
+    public ResponseEntity<ProveedorDTO> crear(@Valid @RequestBody ProveedorRequestDTO request) {
+        return ResponseEntity.status(201).body(service.crear(request));
     }
 
     @GetMapping

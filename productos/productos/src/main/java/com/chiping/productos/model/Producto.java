@@ -24,7 +24,7 @@ public class Producto {
     private Integer precio;
 
     private Integer stock;
-    private String marca;
+
     @Column(name = "descripcion_corta")
     private String descripcionCorta;
 
@@ -35,6 +35,7 @@ public class Producto {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-
-
+    @ManyToOne
+    @JoinColumn(name = "marca_id")
+    private Marca marca;
 }

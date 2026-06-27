@@ -12,7 +12,8 @@ public class ProductoResponseDTO {
     private String nombre;
     private Integer precio;
     private Integer stock;
-    private String marca;
+    private Long marcaId;
+    private String marcaNombre;
     private String descripcion_corta;
     private String proveedor;
     private String categoria;

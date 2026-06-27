@@ -1,7 +1,8 @@
 package com.chipping.usuarios.controller;
 
 import com.chipping.usuarios.dto.LoginRequest;
-import com.chipping.usuarios.model.Usuario;
+import com.chipping.usuarios.dto.UsuarioRequestDTO;
+import com.chipping.usuarios.dto.UsuarioResponseDTO;
 import com.chipping.usuarios.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrar(@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioRequestDTO request) {
         try {
-            Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
+            UsuarioResponseDTO nuevoUsuario = usuarioService.registrarUsuario(request);
             return ResponseEntity.ok(nuevoUsuario);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -32,7 +33,7 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            Usuario usuarioValido = usuarioService.verificarLogin(
+            UsuarioResponseDTO usuarioValido = usuarioService.verificarLogin(
                     loginRequest.getUsername(),
                     loginRequest.getPassword()
             );
@@ -43,7 +44,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarTodos() {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 

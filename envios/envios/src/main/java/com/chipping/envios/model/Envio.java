@@ -28,9 +28,9 @@ public class Envio {
     @Column(name = "direccion_destino", nullable = false, length = 500)
     private String direccionDestino;
 
-    // PREPARANDO, EN_CAMINO, ENTREGADO, CANCELADO
-    @Column(nullable = false, length = 30)
-    private String estado;
+    @ManyToOne
+    @JoinColumn(name = "estado_id", nullable = false)
+    private EstadoEnvio estado;
 
     @Column(name = "numero_seguimiento", length = 100)
     private String numeroSeguimiento;

@@ -3,7 +3,7 @@ package com.chipping.inventario.service;
 import com.chipping.inventario.client.NotificacionClient;
 import com.chipping.inventario.dto.InventarioRequestDTO;
 import com.chipping.inventario.dto.StockResponseDTO;
-import com.chipping.inventario.entity.Inventario;
+import com.chipping.inventario.model.Inventario;
 import com.chipping.inventario.repository.InventarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

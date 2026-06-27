@@ -1,4 +1,5 @@
 package com.chiping.productos.dto;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,10 +21,12 @@ public class ProductoRequestDTO {
     private Integer precio;
 
     @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0 , message = "El stock no puede ser negativo")
+    @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
-    private String marca;
+    @NotNull(message = "El ID de la marca es obligatorio")
+    private Long marcaId;
+
     private String descripcionCorta;
 
     @NotNull(message = "El ID del proveedor es obligatorio")
@@ -31,6 +34,4 @@ public class ProductoRequestDTO {
 
     @NotNull(message = "El id categoría es obligatorio")
     private Long categoriaId;
-
-
 }

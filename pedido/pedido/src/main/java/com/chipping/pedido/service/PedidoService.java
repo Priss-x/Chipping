@@ -5,8 +5,10 @@ import com.chipping.pedido.dto.CarroDTO;
 import com.chipping.pedido.dto.ItemPedidoDTO;
 import com.chipping.pedido.dto.PedidoRequestDTO;
 import com.chipping.pedido.dto.PedidoResponseDTO;
+import com.chipping.pedido.model.EstadoPedido;
 import com.chipping.pedido.model.ItemPedido;
 import com.chipping.pedido.model.Pedido;
+import com.chipping.pedido.repository.EstadoPedidoRepository;
 import com.chipping.pedido.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,13 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
+    private final EstadoPedidoRepository estadoPedidoRepository;
     private final CarroClient carroClient;
+
+    private EstadoPedido obtenerEstadoPorNombre(String nombre) {
+        return estadoPedidoRepository.findByNombre(nombre)
+                .orElseThrow(() -> new RuntimeException("El estado '" + nombre + "' no existe en estados_pedido"));
+    }
 
     public PedidoResponseDTO crearPedido(PedidoRequestDTO request) {
         CarroDTO carro = carroClient.obtenerCarro(request.getUsuarioId());
@@ -37,7 +45,7 @@ public class PedidoService {
         Pedido pedido = new Pedido();
         pedido.setUsuarioId(request.getUsuarioId());
         pedido.setCarroId(carro.getId());
-        pedido.setEstado("PENDIENTE");
+        pedido.setEstado(obtenerEstadoPorNombre("PENDIENTE"));
         pedido.setTotal(carro.getTotal());
         pedido.setDireccionEnvio(request.getDireccionEnvio());
         pedido.setFechaCreacion(LocalDateTime.now());
@@ -79,7 +87,7 @@ public class PedidoService {
     public PedidoResponseDTO actualizarEstado(Long id, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-        pedido.setEstado(nuevoEstado);
+        pedido.setEstado(obtenerEstadoPorNombre(nuevoEstado));
         pedido.setFechaActualizacion(LocalDateTime.now());
         return mapToDTO(pedidoRepository.save(pedido));
     }
@@ -98,7 +106,7 @@ public class PedidoService {
                 pedido.getId(),
                 pedido.getUsuarioId(),
                 pedido.getCarroId(),
-                pedido.getEstado(),
+                pedido.getEstado().getNombre(),
                 pedido.getTotal(),
                 pedido.getDireccionEnvio(),
                 pedido.getFechaCreacion(),

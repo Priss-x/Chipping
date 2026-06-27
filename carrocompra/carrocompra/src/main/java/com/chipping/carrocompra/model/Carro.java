@@ -23,8 +23,9 @@ public class Carro {
     @Column(nullable = false)
     private Long usuarioId;
 
-    @Column(nullable = false, length = 20)
-    private String estado;
+    @ManyToOne
+    @JoinColumn(name = "estado_id", nullable = false)
+    private EstadoCarro estado;
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;

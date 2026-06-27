@@ -6,7 +6,11 @@ import com.chipping.pagos.client.PedidoClient;
 import com.chipping.pagos.dto.PagoRequestDTO;
 import com.chipping.pagos.dto.PedidoDTO;
 import com.chipping.pagos.dto.TransaccionResponseDTO;
+import com.chipping.pagos.model.EstadoPago;
+import com.chipping.pagos.model.MetodoPago;
 import com.chipping.pagos.model.Transaccion;
+import com.chipping.pagos.repository.EstadoPagoRepository;
+import com.chipping.pagos.repository.MetodoPagoRepository;
 import com.chipping.pagos.repository.TransaccionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import java.util.stream.Collectors;
 public class PagoService {
 
     private final TransaccionRepository transaccionRepository;
+    private final MetodoPagoRepository metodoPagoRepository;
+    private final EstadoPagoRepository estadoPagoRepository;
     private final PedidoClient pedidoClient;
     private final InventarioClient inventarioClient;
     private final CarroClient carroClient;
@@ -46,8 +52,12 @@ public class PagoService {
                     + " no coincide con el total del pedido " + pedido.getTotal());
         }
 
+        MetodoPago metodoPago = metodoPagoRepository.findByNombre(request.getMetodoPago())
+                .orElseThrow(() -> new RuntimeException("El método de pago '" + request.getMetodoPago() + "' no es válido"));
+
         boolean aprobado = request.getMonto() > 0;
-        String estado = aprobado ? "APROBADO" : "RECHAZADO";
+        EstadoPago estado = estadoPagoRepository.findByNombre(aprobado ? "APROBADO" : "RECHAZADO")
+                .orElseThrow(() -> new RuntimeException("El estado de pago no existe en el catálogo"));
         String codigoAutorizacion = aprobado
                 ? UUID.randomUUID().toString().substring(0, 8).toUpperCase()
                 : null;
@@ -57,7 +67,7 @@ public class PagoService {
                 request.getPedidoId(),
                 request.getUsuarioId(),
                 request.getMonto(),
-                request.getMetodoPago(),
+                metodoPago,
                 estado,
                 codigoAutorizacion,
                 LocalDateTime.now(),
@@ -119,7 +129,7 @@ public class PagoService {
     private TransaccionResponseDTO mapToDTO(Transaccion t) {
         return new TransaccionResponseDTO(
                 t.getId(), t.getPedidoId(), t.getUsuarioId(),
-                t.getMonto(), t.getMetodoPago(), t.getEstado(),
+                t.getMonto(), t.getMetodoPago().getNombre(), t.getEstado().getNombre(),
                 t.getCodigoAutorizacion(), t.getFechaCreacion());
     }
 }

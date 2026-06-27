@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProveedorDTO {
     private Long id;
     private String nombre;
-    private String pais;
+    private Long paisId;
+    private String paisNombre;
 }

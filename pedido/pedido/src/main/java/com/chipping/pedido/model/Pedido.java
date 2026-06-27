@@ -26,8 +26,9 @@ public class Pedido {
     @Column(name = "carro_id", nullable = false)
     private Long carroId;
 
-    @Column(nullable = false, length = 30)
-    private String estado; // PENDIENTE, PAGADO, CANCELADO, ENVIADO, ENTREGADO
+    @ManyToOne
+    @JoinColumn(name = "estado_id", nullable = false)
+    private EstadoPedido estado;
 
     @Column(nullable = false)
     private Integer total;

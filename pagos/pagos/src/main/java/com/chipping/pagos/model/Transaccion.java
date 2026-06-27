@@ -27,11 +27,13 @@ public class Transaccion {
     @Column(nullable = false)
     private Integer monto;
 
-    @Column(name = "metodo_pago", nullable = false, length = 50)
-    private String metodoPago; // DEBITO, CREDITO, TRANSFERENCIA
+    @ManyToOne
+    @JoinColumn(name = "metodo_pago_id", nullable = false)
+    private MetodoPago metodoPago;
 
-    @Column(nullable = false, length = 30)
-    private String estado; // APROBADO, RECHAZADO
+    @ManyToOne
+    @JoinColumn(name = "estado_id", nullable = false)
+    private EstadoPago estado;
 
     @Column(name = "codigo_autorizacion", length = 100)
     private String codigoAutorizacion;
