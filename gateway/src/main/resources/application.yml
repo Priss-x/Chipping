@@ -1,0 +1,65 @@
+
+server:
+  port: 8089
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: servicio-productos
+          uri: http://localhost:8090
+          predicates:
+            - Path=/productos,/productos/**
+
+        - id: servicio-proveedores
+          uri: http://localhost:8091
+          predicates:
+            - Path=/api/proveedores,/api/proveedores/**
+
+        - id: servicio-inventario
+          uri: http://localhost:8092
+          predicates:
+            - Path=/inventario,/inventario/**
+
+        - id: servicio-usuarios
+          uri: http://localhost:8093
+          predicates:
+            - Path=/api/usuarios,/api/usuarios/**
+
+        - id: servicio-pedido
+          uri: http://localhost:8094
+          predicates:
+            - Path=/pedidos,/pedidos/**
+
+        - id: servicio-notificaciones
+          uri: http://localhost:8095
+          predicates:
+            - Path=/notificaciones,/notificaciones/**
+
+        - id: servicio-carrocompra
+          uri: http://localhost:8096
+          predicates:
+            - Path=/carro,/carro/**
+
+        - id: servicio-pagos
+          uri: http://localhost:8097
+          predicates:
+            - Path=/pagos,/pagos/**
+
+        - id: servicio-envios
+          uri: http://localhost:8098
+          predicates:
+            - Path=/envios,/envios/**
+
+        - id: servicio-resenas
+          uri: http://localhost:8099
+          predicates:
+            - Path=/resenas,/resenas/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
