@@ -24,5 +24,4 @@ public class UsuarioRequestDTO {
     @Size(min = 4, max = 10, message = "La contrasena debe tener entre 4 y 10 caracteres")
     private String password;
 
-    private Long roleId;
 }

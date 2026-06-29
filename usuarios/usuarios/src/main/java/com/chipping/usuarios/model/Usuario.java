@@ -34,7 +34,6 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Rol role;
+    @Column(name = "role")
+    private String role = "CLIENTE";
 }
