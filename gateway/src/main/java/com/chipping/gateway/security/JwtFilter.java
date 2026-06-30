@@ -55,11 +55,11 @@ public class JwtFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange);
             }
 
-            if (path.startsWith("/api/pedidos")) {
+            if (path.startsWith("/pedidos")) {
                 return chain.filter(exchange);
             }
 
-            if (path.startsWith("/api/pagos")) {
+            if (path.startsWith("/pagos")) {
                 return chain.filter(exchange);
             }
         }
