@@ -1,6 +1,6 @@
 package com.chipping.inventario.repository;
 
-import com.chipping.inventario.entity.Inventario;
+import com.chipping.inventario.model.Inventario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
