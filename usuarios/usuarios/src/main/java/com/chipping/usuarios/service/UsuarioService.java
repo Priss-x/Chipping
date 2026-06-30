@@ -22,34 +22,28 @@ public class UsuarioService {
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("El correo ya está registrado");
         }
-
         if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("El nombre de usuario ya existe");
         }
-
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(request.getPassword());
         usuario.setRole("CLIENTE");
-
         return mapToDTO(usuarioRepository.save(usuario));
     }
 
     public UsuarioResponseDTO verificarLogin(String username, String password) {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("El usuario no existe"));
-
         if (!usuario.getPassword().equals(password)) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-
         return mapToDTO(usuario);
     }
 
     public List<UsuarioResponseDTO> listarTodos() {
-        return usuarioRepository.findAll()
-                .stream()
+        return usuarioRepository.findAll().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -57,7 +51,6 @@ public class UsuarioService {
     public UsuarioResponseDTO obtenerPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         return mapToDTO(usuario);
     }
 

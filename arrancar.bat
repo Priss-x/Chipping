@@ -3,7 +3,7 @@ echo ==========================================
 echo    INICIANDO MICROSERVICIOS CHIPPING
 echo ==========================================
 
-set RUTA=C:\Users\Nicolas\OneDrive\Desktop\Duoc\FullStack\Proyecto\Chipping definitivo pirss\Chipping definitivo
+set RUTA=C:\Users\Nicolas\OneDrive\Desktop\Chipping30_06
 
 echo.
 echo [1/10] Arrancando proveedores (8091)...
